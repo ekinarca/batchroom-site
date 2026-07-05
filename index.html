@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Batchroom — self-hosted batch background removal & image pipelines</title>
+<meta name="description" content="Your own media pipeline: batch AI background removal, resizing, conversion and marketplace preset packs on your own server. No meters, no quotas, no cloud. MIT core.">
+<meta property="og:title" content="Batchroom — your own media pipeline">
+<meta property="og:description" content="Self-hosted batch background removal, resizing, conversion and marketplace preset packs. No meters, no quotas, no cloud.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://batchroom.app">
+<meta property="og:image" content="https://batchroom.app/icon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23101113'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='none' stroke='%23e5484d' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23e5484d'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0e0f11;--raise:#141519;--raise2:#1a1c21;--line:#24262c;--line2:#33363e;
+  --ink:#e9eaec;--dim:#9ba0a8;--faint:#6b7078;--sig:#e5484d;--sig-ink:#ffd9da;
+  --ok:#46a758;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+  radial-gradient(1400px 700px at 80% -10%,rgba(229,72,77,.06),transparent 60%),
+  var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+header{display:flex;align-items:center;gap:12px;padding:22px 0}
+.mark{width:30px;height:30px;border-radius:9px;background:var(--raise2);border:1px solid var(--line2);position:relative;flex:none}
+.mark::before{content:"";position:absolute;inset:7px;border:3px solid var(--sig);border-radius:50%}
+.mark::after{content:"";position:absolute;inset:0;margin:auto;width:5px;height:5px;border-radius:50%;background:var(--sig)}
+.brand{font-weight:700;letter-spacing:.2px}
+header nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-block;padding:9px 18px;border-radius:9px;border:1px solid var(--line2);
+  background:var(--raise2);color:var(--ink);text-decoration:none;font-size:14.5px;transition:border-color .12s}
+.btn:hover{border-color:var(--faint)}
+.btn.sig{background:var(--sig);border-color:var(--sig);color:#fff;font-weight:650}
+.btn.sig:hover{filter:brightness(1.08)}
+.hero{padding:64px 0 34px;text-align:center}
+.hero h1{font-size:clamp(30px,5.4vw,52px);line-height:1.12;margin:0 0 16px;letter-spacing:-.5px}
+.hero h1 em{font-style:normal;color:var(--sig)}
+.hero p.lead{color:var(--dim);max-width:62ch;margin:0 auto 28px;font-size:18px}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.note{color:var(--faint);font-size:13px}
+.term{max-width:640px;margin:30px auto 0;background:#0a0b0c;border:1px solid var(--line);
+  border-radius:12px;padding:16px 20px;font-family:var(--mono);font-size:13.5px;text-align:left;
+  overflow-x:auto;white-space:nowrap}
+.term .p{color:var(--sig)}
+.term .c{color:var(--faint)}
+.demo{margin:44px auto 0;max-width:940px}
+.demo img{width:100%;border-radius:14px;border:1px solid var(--line2);display:block;
+  box-shadow:0 24px 70px rgba(0,0,0,.5)}
+section{padding:64px 0}
+h2{font-size:26px;margin:0 0 8px;letter-spacing:-.2px}
+.sub{color:var(--dim);margin:0 0 30px;max-width:70ch}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{background:var(--raise);border:1px solid var(--line);border-radius:13px;padding:22px}
+.card h3{margin:0 0 8px;font-size:16.5px}
+.card p{margin:0;color:var(--dim);font-size:14.5px}
+.card .k{font-family:var(--mono);font-size:12px;color:var(--sig-ink);background:rgba(229,72,77,.13);
+  border-radius:99px;padding:2px 9px;display:inline-block;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--faint);font-weight:550;font-size:13px}
+td:first-child{color:var(--dim)}
+.yes{color:var(--ok)}.no{color:var(--faint)}
+.price-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:stretch}
+.price{background:var(--raise);border:1px solid var(--line);border-radius:14px;padding:26px;display:flex;flex-direction:column}
+.price.pro{border-color:rgba(229,72,77,.55)}
+.price .tier{font-family:var(--mono);font-size:12.5px;color:var(--faint);letter-spacing:.8px;text-transform:uppercase}
+.price .amount{font-size:34px;font-weight:750;margin:10px 0 2px}
+.price .amount small{font-size:14px;color:var(--faint);font-weight:400}
+.price ul{list-style:none;padding:0;margin:16px 0 22px;color:var(--dim);font-size:14.5px;display:grid;gap:9px}
+.price li::before{content:"✓";color:var(--ok);margin-right:9px}
+.price .btn{margin-top:auto;text-align:center}
+footer{border-top:1px solid var(--line);padding:34px 0 44px;color:var(--faint);font-size:13.5px}
+footer .row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+footer a{color:var(--dim);text-decoration:none}
+footer a:hover{color:var(--ink)}
+@media (max-width:640px){.hero{padding-top:38px}section{padding:44px 0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="mark" aria-hidden="true"></span>
+    <span class="brand">Batchroom</span>
+    <nav>
+      <a class="btn" href="https://github.com/ekinarca/batchroom">GitHub</a>
+      <a class="btn sig" href="https://buy.polar.sh/polar_cl_IOVj9pe9dlWU428JxxwJIal3GDohw7ZaurvbQ4NLXGO">Get Pro</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Your own media pipeline.<br><em>No meters. No quotas. No cloud.</em></h1>
+    <p class="lead">Batchroom is a self-hosted server that removes backgrounds, resizes, converts
+      and packs your images into every marketplace format — hundreds at a time, on your own
+      hardware, with AI models that never send a pixel anywhere.</p>
+    <div class="cta">
+      <a class="btn sig" href="#pricing">Pricing</a>
+      <a class="btn" href="#features">What it does</a>
+    </div>
+    <div class="term" aria-label="quick start command">
+      <span class="c"># up and running in one line</span><br>
+      <span class="p">$</span> docker run -d -p 5151:5151 -v batchroom-data:/data ghcr.io/ekinarca/batchroom:latest
+    </div>
+    <p class="note" style="margin-top:12px">MIT-licensed core · web UI in 10 languages · REST API · watch folders</p>
+    <div class="demo">
+      <img src="demo.gif" alt="Batchroom demo: drop product photos, pick a recipe, watch the queue process them, compare before and after" loading="lazy">
+    </div>
+  </div>
+
+  <section id="features">
+    <h2>One recipe in, a finished catalog out</h2>
+    <p class="sub">A recipe is a small YAML pipeline. Drop 500 photos on it — every step runs on your CPU, originals are never touched, and a manifest records everything.</p>
+    <div class="grid">
+      <div class="card"><span class="k">remove-background</span>
+        <h3>AI background removal</h3>
+        <p>ISNet, U²-Net and BiRefNet ONNX models run locally — 0.3&nbsp;s per 1080p image on a modern CPU. Checksum-pinned downloads, permissive licenses only.</p></div>
+      <div class="card"><span class="k">preset-pack</span>
+        <h3>Marketplace preset packs</h3>
+        <p>Amazon 2000², Etsy 2000×1500, Shopify 2048², Trendyol 1200×1800, Instagram — or every Steam capsule size from one key art. Named, sorted, done.</p></div>
+      <div class="card"><span class="k">watch-folder</span>
+        <h3>NAS-grade watch folders</h3>
+        <p>Drop files into a hot folder — safe on SMB/NFS, picks up only fully-copied files, sorts sources into done/ and failed/.</p></div>
+      <div class="card"><span class="k">convert · resize · trim</span>
+        <h3>The whole toolchain</h3>
+        <p>JPG, PNG, WebP, AVIF, HEIC in and out. Contain/pad/cover fitting, alpha-aware trims, 4× Real-ESRGAN upscaling, EXIF stripped by default.</p></div>
+      <div class="card"><span class="k">REST + webhooks</span>
+        <h3>Automation-first</h3>
+        <p>Everything the UI does is plain HTTP. Async jobs, SSE progress, a signed manifest per batch and a webhook when it's done.</p></div>
+      <div class="card"><span class="k">self-hosted</span>
+        <h3>Private by architecture</h3>
+        <p>One Docker container, SQLite state, no external services, no telemetry. Air-gapped? Pre-pull the models and cut the cable.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why not a cloud API?</h2>
+    <div class="card" style="padding:6px 4px 2px">
+    <table>
+      <tr><th></th><th>Cloud tools</th><th>Batchroom</th></tr>
+      <tr><td>Pricing</td><td>$0.02–0.10 <em>per image</em></td><td class="yes">Free core, unlimited</td></tr>
+      <tr><td>Your images</td><td>Uploaded to their servers</td><td class="yes">Never leave your machine</td></tr>
+      <tr><td>500-photo batch</td><td>Rate limits, credit anxiety</td><td class="yes">One drag &amp; drop</td></tr>
+      <tr><td>Marketplace sizes</td><td>Manual, per platform</td><td class="yes">One recipe → every size</td></tr>
+      <tr><td>Offline / air-gapped</td><td class="no">No</td><td class="yes">Yes</td></tr>
+    </table>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <p class="sub">The core is the full product for individuals — free forever, no feature ransom. Pro exists for teams and pays for the maintenance.</p>
+    <div class="price-grid">
+      <div class="price">
+        <span class="tier">Community</span>
+        <div class="amount">€0 <small>MIT license</small></div>
+        <ul>
+          <li>Every image operation, unlimited volume</li>
+          <li>Watch folders, REST API, webhooks, CLI</li>
+          <li>Web UI in 10 languages</li>
+          <li>All AI models, checksum-verified</li>
+        </ul>
+        <a class="btn" href="https://github.com/ekinarca/batchroom">Get it on GitHub</a>
+      </div>
+      <div class="price pro">
+        <span class="tier" style="color:var(--sig-ink)">Pro</span>
+        <div class="amount">€24<small>/mo</small> <small>or €240/yr per server</small></div>
+        <ul>
+          <li>Team accounts with roles &amp; per-user API keys</li>
+          <li>Priority queue for urgent batches</li>
+          <li>Email notifications on completion</li>
+          <li>Offline signed license — no phone-home</li>
+          <li>Priority support (48&nbsp;h)</li>
+        </ul>
+        <a class="btn sig" href="https://buy.polar.sh/polar_cl_IOVj9pe9dlWU428JxxwJIal3GDohw7ZaurvbQ4NLXGO">Buy Batchroom Pro</a>
+      </div>
+    </div>
+    <p class="note" style="margin-top:14px">Payments are processed by Polar (merchant of record — VAT handled). An expired license never locks your data: accounts keep working, paid features pause until renewal.</p>
+  </section>
+
+  <footer>
+    <div class="row">
+      <span><span class="mark" style="display:inline-block;width:18px;height:18px;border-radius:5px;vertical-align:-4px"></span> Batchroom</span>
+      <a href="https://github.com/ekinarca/batchroom">GitHub</a>
+      <a href="mailto:support@batchroom.app">support@batchroom.app</a>
+      <span style="margin-left:auto">No cookies, no analytics on this site. © 2026 Batchroom.</span>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
